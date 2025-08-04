@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Form, FormField, FormLabel, FormMessage, FormDescription } from '@/components/ui/form'
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { trackFormSubmit, trackServiceInterest, trackContactPreference } from '@/lib/analytics'
 
 // 表单验证Schema
 const formSchema = z.object({
@@ -125,16 +126,46 @@ export default function MultiStepForm() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
+    
     try {
-      // 这里需要调用实际的API
-      console.log('Form submitted:', data)
+      console.log('提交表单数据:', data)
       
-      // 模拟API调用
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // 追踪表单提交开始
+      trackServiceInterest(data.integrationType, data.sportsInterests.length)
       
-      setIsSubmitted(true)
+      // 这里调用实际的API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          formType: 'multi_step'  // 标识这是多步骤表单
+        }),
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        setIsSubmitted(true)
+        console.log('✅ 表单提交成功:', result.message)
+        
+        // 追踪表单提交成功
+        trackFormSubmit('multi_step_form', true)
+      } else {
+        console.error('❌ 表单提交失败:', result.error)
+        
+        // 追踪表单提交失败
+        trackFormSubmit('multi_step_form', false)
+        alert(result.error || '提交失败，请稍后重试')
+      }
     } catch (error) {
-      console.error('提交失败:', error)
+      console.error('💥 提交表单时出错:', error)
+      
+      // 追踪表单提交错误
+      trackFormSubmit('multi_step_form', false)
+      alert('网络错误，请检查网络连接后重试')
     } finally {
       setIsSubmitting(false)
     }

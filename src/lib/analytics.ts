@@ -24,6 +24,16 @@ export const trackEvent = (action: string, category: string, label?: string, val
 // 追踪表单提交
 export const trackFormSubmit = (formName: string, success: boolean = true) => {
   trackEvent('form_submit', 'engagement', formName, success ? 1 : 0)
+  
+  // Google Ads 转化事件追踪
+  if (success && typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'conversion', {
+      'send_to': 'AW-17429360235/YnXkCNidzP4aEOvc-_ZA',
+      'value': 1.0,
+      'currency': 'SGD'
+    })
+    console.log('🎯 Google Ads 转化事件已触发')
+  }
 }
 
 // 追踪按钮点击
@@ -45,4 +55,16 @@ export const trackContactPreference = (contactMethod: string) => {
 // 追踪页面停留时间
 export const trackPageDwellTime = (pageName: string, duration: number) => {
   trackEvent('page_dwell_time', 'engagement', pageName, Math.round(duration / 1000))
+}
+
+// Google Ads 转化事件追踪 (独立函数)
+export const trackGoogleAdsConversion = (value: number = 1.0, currency: string = 'SGD') => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'conversion', {
+      'send_to': 'AW-17429360235/YnXkCNidzP4aEOvc-_ZA',
+      'value': value,
+      'currency': currency
+    })
+    console.log('🎯 Google Ads 转化事件已触发:', { value, currency })
+  }
 }

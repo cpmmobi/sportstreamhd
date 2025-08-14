@@ -457,7 +457,7 @@ export function getUserSourceInfo(): UserSourceInfo {
     source,
     medium,
     campaign: utmCampaign || undefined,
-    keyword,
+    keyword: keyword || undefined,
     keywordSource,
     referrer: document.referrer,
     landingPage: window.location.href,

@@ -1,6 +1,9 @@
+'use client'
+
 import React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { addUTMToLink } from '@/lib/utm-persistence'
 
 const navigation = {
   main: [
@@ -46,7 +49,7 @@ export default function Footer() {
                 专业体育直播流技术服务商，为体育类产品开发者提供稳定、多元化的全球体育赛事直播流技术接入服务。
               </p>
               <Button variant="accent" asChild>
-                <Link href="/contact">获取试用和报价</Link>
+                <Link href={addUTMToLink('/contact')}>获取试用和报价</Link>
               </Button>
             </div>
 

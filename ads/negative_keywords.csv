@@ -1,0 +1,119 @@
+Negative Keyword,Match Type,Campaign
+"免费看",Broad,All Campaigns
+"免费直播",Broad,All Campaigns
+"免费观看",Broad,All Campaigns
+"直播源",Broad,All Campaigns
+"直播吧",Broad,All Campaigns
+"在线直播",Broad,All Campaigns
+"高清直播",Broad,All Campaigns
+"现场直播",Broad,All Campaigns
+"看比赛",Broad,All Campaigns
+"今日直播",Broad,All Campaigns
+"在线观看",Broad,All Campaigns
+"视频回放",Broad,All Campaigns
+"录像",Broad,All Campaigns
+"集锦",Broad,All Campaigns
+"下载",Broad,All Campaigns
+"app",Broad,All Campaigns
+"电视台",Broad,All Campaigns
+"频道",Broad,All Campaigns
+"CCTV5",Exact,All Campaigns
+"咪咕",Exact,All Campaigns
+"腾讯体育",Exact,All Campaigns
+"爱奇艺体育",Exact,All Campaigns
+"bilibili",Exact,All Campaigns
+"优酷",Exact,All Campaigns
+"爱奇艺",Exact,All Campaigns
+"免费",Broad,All Campaigns
+"破解",Broad,All Campaigns
+"盗版",Broad,All Campaigns
+"资源",Broad,All Campaigns
+"种子",Broad,All Campaigns
+"磁力",Broad,All Campaigns
+"BT下载",Broad,All Campaigns
+"迅雷",Broad,All Campaigns
+"网盘",Broad,All Campaigns
+"百度云",Broad,All Campaigns
+"阿里云盘",Broad,All Campaigns
+"free stream",Broad,All Campaigns
+"watch live",Broad,All Campaigns
+"free live",Broad,All Campaigns
+"hd live",Broad,All Campaigns
+"reddit stream",Broad,All Campaigns
+"ace stream",Broad,All Campaigns
+"kodi",Broad,All Campaigns
+"iptv",Broad,All Campaigns
+"download",Broad,All Campaigns
+"full match",Broad,All Campaigns
+"highlights",Broad,All Campaigns
+"replay",Broad,All Campaigns
+"torrent",Broad,All Campaigns
+"youtube",Broad,All Campaigns
+"twitch",Broad,All Campaigns
+"channel",Broad,All Campaigns
+"schedule today",Broad,All Campaigns
+"live tv",Broad,All Campaigns
+"watch online",Broad,All Campaigns
+"streaming free",Broad,All Campaigns
+"live stream free",Broad,All Campaigns
+"cracked",Broad,All Campaigns
+"pirate",Broad,All Campaigns
+"illegal",Broad,All Campaigns
+"bootleg",Broad,All Campaigns
+"unauthorized",Broad,All Campaigns
+"hack",Broad,All Campaigns
+"bypass",Broad,All Campaigns
+"unblock",Broad,All Campaigns
+"vpn",Broad,All Campaigns
+"proxy",Broad,All Campaigns
+"mirror",Broad,All Campaigns
+"alternative",Broad,All Campaigns
+"reddit",Broad,All Campaigns
+"discord",Broad,All Campaigns
+"telegram channel",Broad,All Campaigns
+"facebook live",Broad,All Campaigns
+"instagram live",Broad,All Campaigns
+"tiktok live",Broad,All Campaigns
+"buffstream",Exact,All Campaigns
+"streameast",Exact,All Campaigns
+"crackstreams",Exact,All Campaigns
+"sportsurge",Exact,All Campaigns
+"firstrowsports",Exact,All Campaigns
+"live365",Exact,All Campaigns
+"atdhe",Exact,All Campaigns
+"vipbox",Exact,All Campaigns
+"wiziwig",Exact,All Campaigns
+"rojadirecta",Exact,All Campaigns
+"livescore",Exact,All Campaigns
+"flashscore",Exact,All Campaigns
+"365scores",Exact,All Campaigns
+"espn",Exact,All Campaigns
+"fox sports",Exact,All Campaigns
+"sky sports",Exact,All Campaigns
+"bbc sport",Exact,All Campaigns
+"cbs sports",Exact,All Campaigns
+"nbc sports",Exact,All Campaigns
+"dazn",Exact,All Campaigns
+"amazon prime",Exact,All Campaigns
+"netflix",Exact,All Campaigns
+"hulu",Exact,All Campaigns
+"disney plus",Exact,All Campaigns
+"paramount plus",Exact,All Campaigns
+"peacock",Exact,All Campaigns
+"apple tv",Exact,All Campaigns
+"roku",Exact,All Campaigns
+"fire tv",Exact,All Campaigns
+"chromecast",Exact,All Campaigns
+"smart tv",Broad,All Campaigns
+"android tv",Broad,All Campaigns
+"ios app",Broad,All Campaigns
+"android app",Broad,All Campaigns
+"mobile app",Broad,All Campaigns
+"个人用户",Broad,All Campaigns
+"家庭用户",Broad,All Campaigns
+"个人观看",Broad,All Campaigns
+"家庭观看",Broad,All Campaigns
+"消费者",Broad,All Campaigns
+"终端用户",Broad,All Campaigns
+"个人订阅",Broad,All Campaigns
+"家庭套餐",Broad,All Campaigns

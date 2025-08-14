@@ -1,0 +1,69 @@
+Keyword,Match Type,Campaign,Ad Group,Max CPC
+"sports streaming api",Exact,Sports API Campaign,Core API Keywords,2.50
+"live sports streaming api",Exact,Sports API Campaign,Core API Keywords,2.50
+"sports video api provider",Exact,Sports API Campaign,Core API Keywords,3.00
+"sports streaming api pricing",Exact,Sports API Campaign,Core API Keywords,3.50
+"sports streaming api enterprise",Exact,Sports API Campaign,Core API Keywords,4.00
+"sports streaming api integration",Exact,Sports API Campaign,Core API Keywords,2.80
+"live match streaming api",Exact,Sports API Campaign,Core API Keywords,2.50
+"video streaming api for sports",Phrase,Sports API Campaign,Core API Keywords,2.00
+"sports streaming solution for apps",Phrase,Sports API Campaign,Developer Solutions,3.00
+"sports streaming service for developers",Phrase,Sports API Campaign,Developer Solutions,3.20
+"enterprise sports streaming",Phrase,Sports API Campaign,Enterprise Solutions,4.50
+"commercial sports streaming provider",Phrase,Sports API Campaign,Enterprise Solutions,4.00
+"white label sports streaming",Exact,Sports API Campaign,Enterprise Solutions,5.00
+"sports streaming sdk",Exact,Sports API Campaign,Developer Solutions,3.50
+"rtmp ingest provider",Exact,RTMP Campaign,RTMP Core Keywords,3.00
+"rtmp push service",Exact,RTMP Campaign,RTMP Core Keywords,3.20
+"rtmp streaming vendor",Phrase,RTMP Campaign,RTMP Core Keywords,2.80
+"rtmp streaming enterprise",Phrase,RTMP Campaign,RTMP Enterprise,4.20
+"rtmp to hls transcoding",Exact,RTMP Campaign,RTMP Tech Keywords,3.50
+"hls live stream provider",Exact,HLS Campaign,HLS Core Keywords,2.80
+"m3u8 live stream provider",Exact,HLS Campaign,HLS Core Keywords,3.00
+"sports m3u8 provider",Exact,HLS Campaign,HLS Sports Keywords,3.50
+"hls streaming api sports",Phrase,HLS Campaign,HLS Sports Keywords,2.50
+"live stream links provider",Phrase,HLS Campaign,HLS Core Keywords,2.30
+"sports live links api",Exact,HLS Campaign,HLS Sports Keywords,3.20
+"low latency sports streaming",Phrase,Sports API Campaign,Performance Keywords,3.80
+"global sports streaming provider",Phrase,Sports API Campaign,Performance Keywords,3.50
+"high availability sports streaming",Phrase,Sports API Campaign,Performance Keywords,4.00
+"sports streaming api trial",Exact,Sports API Campaign,Trial Keywords,4.50
+"sports streaming api free trial",Phrase,Sports API Campaign,Trial Keywords,4.20
+"sports streaming provider pricing",Phrase,Sports API Campaign,Pricing Keywords,4.80
+"sports streaming enterprise pricing",Phrase,Sports API Campaign,Pricing Keywords,5.20
+"football live stream provider b2b",Phrase,Sports Categories Campaign,Football B2B,3.20
+"basketball live stream provider b2b",Phrase,Sports Categories Campaign,Basketball B2B,3.00
+"tennis live stream provider b2b",Phrase,Sports Categories Campaign,Tennis B2B,2.80
+"esports live stream provider b2b",Phrase,Sports Categories Campaign,Esports B2B,3.50
+"SportStreamHD",Exact,Brand Campaign,Brand Core,1.00
+"SportStreamHD api",Exact,Brand Campaign,Brand Core,1.50
+"SportStreamHD pricing",Exact,Brand Campaign,Brand Core,2.00
+"体育直播流 api",Exact,中文API Campaign,核心API关键词,3.00
+"体育直播 接口 对接",Phrase,中文API Campaign,核心API关键词,3.20
+"体育视频 api 接入",Phrase,中文API Campaign,核心API关键词,2.80
+"体育直播 api 服务商",Exact,中文API Campaign,核心API关键词,3.50
+"体育直播 api 报价",Exact,中文API Campaign,报价关键词,4.50
+"体育直播 api 企业 接入",Phrase,中文API Campaign,企业级关键词,4.20
+"rtmp 推流 服务",Exact,中文RTMP Campaign,RTMP核心词,3.20
+"rtmp 推流 供应商",Exact,中文RTMP Campaign,RTMP核心词,3.50
+"rtmp 转 hls 转码",Phrase,中文RTMP Campaign,RTMP技术词,3.80
+"hls 直播 服务商",Exact,中文HLS Campaign,HLS核心词,3.00
+"m3u8 直播 链接 供应商",Phrase,中文HLS Campaign,HLS核心词,3.20
+"体育 hls 直播 接入",Phrase,中文HLS Campaign,HLS体育词,2.80
+"体育直播 b端 解决方案",Phrase,中文API Campaign,企业级关键词,4.80
+"体育直播 企业级 服务",Phrase,中文API Campaign,企业级关键词,4.50
+"体育直播 技术 服务商",Phrase,中文API Campaign,企业级关键词,4.00
+"体育直播 白标 方案",Exact,中文API Campaign,企业级关键词,5.50
+"体育直播 sdk",Exact,中文API Campaign,开发者关键词,3.50
+"低延迟 体育直播 流",Phrase,中文API Campaign,性能关键词,4.00
+"全球 覆盖 体育直播",Phrase,中文API Campaign,性能关键词,3.80
+"稳定 体育直播 流媒体",Phrase,中文API Campaign,性能关键词,3.50
+"体育直播 api 试用",Exact,中文API Campaign,试用关键词,4.80
+"体育直播 api 免费 试用",Phrase,中文API Campaign,试用关键词,4.50
+"体育直播 流 价格",Phrase,中文API Campaign,报价关键词,4.20
+"足球 直播 流 供应商",Phrase,中文体育分类 Campaign,足球B2B,3.20
+"篮球 直播 流 供应商",Phrase,中文体育分类 Campaign,篮球B2B,3.00
+"电竞 直播 流 供应商",Phrase,中文体育分类 Campaign,电竞B2B,3.50
+"网球 直播 流 供应商",Phrase,中文体育分类 Campaign,网球B2B,2.80
+"SportStreamHD 接入",Exact,中文品牌 Campaign,品牌核心,1.50
+"SportStreamHD 报价",Exact,中文品牌 Campaign,品牌核心,2.00

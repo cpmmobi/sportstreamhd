@@ -7,6 +7,7 @@ import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { trackButtonClick } from '@/lib/analytics'
+import { addUTMToLink } from '@/lib/utm-persistence'
 
 const navigation = [
   { name: '首页', href: '/' },
@@ -72,7 +73,7 @@ export default function Header() {
           <div className="hidden lg:flex items-center space-x-4">
             <Button variant="accent" asChild>
               <Link 
-                href="/contact"
+                href={addUTMToLink('/contact')}
                 onClick={() => trackButtonClick('获取试用和报价', 'header')}
               >
                 获取试用和报价
@@ -116,7 +117,7 @@ export default function Header() {
               <div className="px-3 py-2">
                 <Button variant="accent" className="w-full" asChild>
                   <Link 
-                    href="/contact" 
+                    href={addUTMToLink('/contact')} 
                     onClick={() => {
                       setIsMenuOpen(false)
                       trackButtonClick('获取试用和报价', 'mobile_menu')

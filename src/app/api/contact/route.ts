@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { UserSourceInfo, formatIPAddress } from '@/lib/user-source-tracker'
 
 // 简化表单数据结构
 interface SimpleContactFormData {
@@ -8,6 +9,7 @@ interface SimpleContactFormData {
   sportsInterests: string[]
   integrationType: string
   requirements?: string
+  userSource?: UserSourceInfo  // 添加用户来源信息
 }
 
 // 多步骤表单数据结构  
@@ -34,6 +36,7 @@ interface MultiStepFormData {
   budgetRange: string
   cooperationModel: string
   otherRequirements?: string
+  userSource?: UserSourceInfo  // 添加用户来源信息
 }
 
 type ContactFormData = SimpleContactFormData | MultiStepFormData
@@ -41,6 +44,239 @@ type ContactFormData = SimpleContactFormData | MultiStepFormData
 // 钉钉机器人配置
 const DINGTALK_ACCESS_TOKEN = process.env.DINGTALK_ACCESS_TOKEN || 'f7cf0fd1267222a98e223611734a46cc9a705ac8ff8eb9773dcf392aa4fdc0e8'
 const DINGTALK_SECRET = process.env.DINGTALK_SECRET || '' // 您需要提供加签密钥
+
+// 获取客户端IP地址
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for')
+  const realIP = request.headers.get('x-real-ip')
+  const remoteAddress = request.headers.get('x-vercel-forwarded-for')
+  
+  if (forwarded) {
+    return forwarded.split(',')[0].trim()
+  }
+  if (realIP) {
+    return realIP
+  }
+  if (remoteAddress) {
+    return remoteAddress
+  }
+  
+  return 'unknown'
+}
+
+// 获取地理位置信息（简化版，基于IP的国家/地区识别）
+function getLocationFromIP(ip: string): string {
+  return formatIPAddress(ip)
+}
+
+// 格式化语言信息
+function formatLanguageInfo(primaryLanguage: string, allLanguages: string[]): string {
+  // 语言代码到友好名称的映射
+  const languageNames: Record<string, string> = {
+    'zh-CN': '简体中文',
+    'zh-TW': '繁体中文',
+    'zh-HK': '香港中文',
+    'en-US': '美式英语',
+    'en-GB': '英式英语',
+    'en': '英语',
+    'ja': '日语',
+    'ko': '韩语',
+    'es': '西班牙语',
+    'fr': '法语',
+    'de': '德语',
+    'it': '意大利语',
+    'pt': '葡萄牙语',
+    'ru': '俄语',
+    'ar': '阿拉伯语',
+    'th': '泰语',
+    'vi': '越南语',
+    'id': '印尼语',
+    'ms': '马来语',
+    'hi': '印地语'
+  }
+  
+  // 获取主要语言的友好名称
+  const primaryName = languageNames[primaryLanguage] || primaryLanguage
+  
+  // 如果有多种语言，显示主要语言加数量
+  if (allLanguages && allLanguages.length > 1) {
+    const otherCount = allLanguages.length - 1
+    return `${primaryName} (+${otherCount}种)`
+  }
+  
+  return primaryName
+}
+
+// 格式化引荐网站信息
+function formatReferrerInfo(referrerUrl: string): string {
+  try {
+    const url = new URL(referrerUrl)
+    const domain = url.hostname
+    const path = url.pathname
+    const search = url.search
+    
+    // 知名网站的友好名称映射
+    const siteNames: Record<string, string> = {
+      // 搜索引擎
+      'www.google.com': 'Google搜索',
+      'www.google.com.hk': 'Google香港',
+      'www.baidu.com': '百度搜索',
+      'www.bing.com': '必应搜索',
+      'www.sogou.com': '搜狗搜索',
+      'www.so.com': '360搜索',
+      
+      // 社交媒体
+      'www.facebook.com': 'Facebook',
+      'twitter.com': 'Twitter',
+      'www.linkedin.com': 'LinkedIn',
+      'weibo.com': '新浪微博',
+      'www.zhihu.com': '知乎',
+      
+      // 技术社区
+      'github.com': 'GitHub',
+      'stackoverflow.com': 'Stack Overflow',
+      'www.reddit.com': 'Reddit',
+      'medium.com': 'Medium',
+      'dev.to': 'DEV Community',
+      
+      // 新闻媒体
+      'www.36kr.com': '36氪',
+      'www.ithome.com': 'IT之家',
+      'techcrunch.com': 'TechCrunch',
+      
+      // 论坛社区
+      'v2ex.com': 'V2EX',
+      'www.v2ex.com': 'V2EX',
+      'segmentfault.com': 'SegmentFault',
+      
+      // 其他
+      'www.producthunt.com': 'Product Hunt'
+    }
+    
+    // 获取友好名称
+    const siteName = siteNames[domain] || domain
+    
+    // 如果是搜索引擎，尝试提取搜索词
+    if (domain.includes('google.') || domain.includes('baidu.') || domain.includes('bing.')) {
+      const searchParams = new URLSearchParams(search)
+      const query = searchParams.get('q') || searchParams.get('wd') || searchParams.get('query')
+      if (query) {
+        return `${siteName} (搜索: "${decodeURIComponent(query)}")`
+      }
+    }
+    
+    // 如果有特殊路径，显示路径信息
+    if (path && path !== '/' && path.length > 1) {
+      // 截断过长的路径
+      const shortPath = path.length > 50 ? path.substring(0, 47) + '...' : path
+      return `${siteName}${shortPath}`
+    }
+    
+    return siteName
+    
+  } catch (error) {
+    console.warn('⚠️ 无法解析引荐URL:', error)
+    return referrerUrl
+  }
+}
+
+// 格式化用户来源信息
+function formatUserSourceInfo(userSource: UserSourceInfo, clientIP: string): string {
+  if (!userSource) return `📍 **位置:** ${getLocationFromIP(clientIP)}`
+  
+  const parts = []
+  
+  // 来源渠道
+  if (userSource.source && userSource.source !== 'unknown') {
+    if (userSource.medium === 'cpc') {
+      parts.push(`💰 **付费广告** - ${userSource.source}`)
+    } else if (userSource.medium === 'organic') {
+      parts.push(`🔍 **自然搜索** - ${userSource.source}`)
+    } else if (userSource.source === 'direct') {
+      parts.push(`🎯 **直接访问**`)
+    } else if (userSource.source === 'social') {
+      parts.push(`📱 **社交媒体引荐**`)
+    } else if (userSource.source === 'tech_community') {
+      parts.push(`💻 **技术社区引荐**`)
+    } else if (userSource.source === 'news_media') {
+      parts.push(`📰 **新闻媒体引荐**`)
+    } else if (userSource.source === 'forum') {
+      parts.push(`💬 **论坛社区引荐**`)
+    } else if (userSource.source === 'referral') {
+      parts.push(`🔗 **网站引荐**`)
+    } else {
+      parts.push(`🔗 **网站引荐** - ${userSource.source}`)
+    }
+  } else {
+    parts.push(`🎯 **直接访问**`)
+  }
+  
+  // 关键词信息
+  if (userSource.keyword) {
+    if (userSource.keywordSource === 'paid') {
+      parts.push(`🎯 **付费关键词:** ${userSource.keyword}`)
+    } else {
+      parts.push(`🔍 **搜索关键词:** ${userSource.keyword}`)
+    }
+  }
+  
+  // 广告系列信息
+  if (userSource.campaign) {
+    parts.push(`📢 **广告系列:** ${userSource.campaign}`)
+  }
+  
+  // 设备信息
+  const deviceEmoji = userSource.device.device === 'mobile' ? '📱' : 
+                     userSource.device.device === 'tablet' ? '💻' : '🖥️'
+  parts.push(`${deviceEmoji} **设备:** ${userSource.device.device} - ${userSource.device.browser}/${userSource.device.os}`)
+  
+  // 语言信息
+  if (userSource.device.language && userSource.device.language !== 'unknown') {
+    const languageDisplay = formatLanguageInfo(userSource.device.language, userSource.device.languages)
+    parts.push(`🌐 **语言:** ${languageDisplay}`)
+  }
+  
+  // 地理位置
+  parts.push(`📍 **位置:** ${getLocationFromIP(clientIP)}`)
+  
+  // Referrer信息（详细显示引荐网站）
+  if (userSource.referrer && userSource.referrer !== userSource.landingPage && userSource.source !== 'direct') {
+    try {
+      const referrerUrl = new URL(userSource.referrer)
+      const referrerDomain = referrerUrl.hostname
+      
+      // 根据来源类型显示不同的信息
+      if (userSource.source === 'referral' || userSource.medium === 'referral') {
+        // 网站引荐 - 显示完整信息
+        const referrerDisplay = formatReferrerInfo(userSource.referrer)
+        parts.push(`🔗 **引荐网站:** ${referrerDisplay}`)
+      } else if (userSource.medium === 'organic') {
+        // 自然搜索 - 显示搜索引擎
+        parts.push(`🔍 **搜索引擎:** ${referrerDomain}`)
+      } else {
+        // 其他情况 - 显示域名
+        parts.push(`🔗 **来源页面:** ${referrerDomain}`)
+      }
+    } catch {
+      // 忽略无效的referrer
+    }
+  }
+  
+  // 着陆页信息（有价值时显示）
+  if (userSource.landingPage && userSource.landingPage.includes('?')) {
+    try {
+      const url = new URL(userSource.landingPage)
+      const params = url.searchParams
+      if (params.get('utm_source') || params.get('gclid')) {
+        parts.push(`🔗 **着陆页:** ${url.pathname}${url.search}`)
+      }
+    } catch {
+      // 忽略无效的URL
+    }
+  }
+  
+  return parts.join('  \n')
+}
 
 // 生成钉钉机器人签名
 function generateDingTalkSign(timestamp: number, secret: string): string {
@@ -66,7 +302,7 @@ function buildDingTalkURL(): { url: string; timestamp: number } {
 }
 
 // 发送消息到钉钉群
-async function sendToDingTalk(formData: ContactFormData) {
+async function sendToDingTalk(formData: ContactFormData, clientIP: string) {
   // 构建体育项目显示文本
   const sportsMap: Record<string, string> = {
     'football': '⚽ 足球',
@@ -152,6 +388,9 @@ ${formData.specialRequirements ? `**📝 特殊需求:** ${formData.specialRequi
 **🤝 合作模式:** ${cooperationMap[formData.cooperationModel] || formData.cooperationModel}  
 ${formData.otherRequirements ? `**📋 其他需求:** ${formData.otherRequirements}` : ''}
 
+### 📊 用户来源分析
+${formData.userSource ? formatUserSourceInfo(formData.userSource, clientIP) : '📍 **位置:** ' + getLocationFromIP(clientIP)}
+
 ---
 
 **⏰ 咨询时间:** ${new Date().toLocaleString('zh-CN', { 
@@ -199,6 +438,9 @@ ${serviceText}
 
 **📝 详细需求说明:**  
 ${simpleData.requirements || '暂无详细说明'}
+
+### 📊 用户来源分析
+${simpleData.userSource ? formatUserSourceInfo(simpleData.userSource, clientIP) : '📍 **位置:** ' + getLocationFromIP(clientIP)}
 
 ---
 
@@ -249,6 +491,11 @@ ${simpleData.requirements || '暂无详细说明'}
 export async function POST(request: NextRequest) {
   try {
     const formData: ContactFormData = await request.json()
+    const clientIP = getClientIP(request)
+    
+    // 调试：打印用户来源信息
+    console.log('🔍 收到的用户来源信息:', formData.userSource)
+    console.log('🌐 客户端IP:', clientIP)
 
     // 检查表单类型并进行相应验证
     if ('formType' in formData && formData.formType === 'multi_step') {
@@ -340,7 +587,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 发送到钉钉
-    const dingResult = await sendToDingTalk(formData)
+    const dingResult = await sendToDingTalk(formData, clientIP)
 
     if (dingResult.success) {
       return NextResponse.json({ 

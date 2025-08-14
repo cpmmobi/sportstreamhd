@@ -11,6 +11,7 @@ import { FormField, FormLabel, FormMessage, FormDescription } from '@/components
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { trackFormSubmit, trackServiceInterest, trackContactPreference } from '@/lib/analytics'
+import { getUserSourceInfo } from '@/lib/user-source-tracker'
 
 // 简化的表单验证Schema - 保护客户隐私，只收集必要信息
 const formSchema = z.object({
@@ -76,6 +77,39 @@ export default function SimpleContactForm() {
     try {
       console.log('提交表单数据:', data)
       
+      // 获取用户来源信息
+      const userSource = getUserSourceInfo()
+      console.log('🔍 前端获取的用户来源信息:', userSource)
+      console.log('🔗 当前URL:', window.location.href)
+      console.log('📄 Referrer:', document.referrer)
+      
+      // 调试URL参数解析
+      const urlParams = new URLSearchParams(window.location.search);
+      console.log('🎯 UTM参数解析:')
+      console.log('  utm_source:', urlParams.get('utm_source'))
+      console.log('  utm_medium:', urlParams.get('utm_medium'))
+      console.log('  utm_campaign:', urlParams.get('utm_campaign'))
+      console.log('  utm_term:', urlParams.get('utm_term'))
+      
+      // 调试语言信息
+      console.log('🌐 浏览器语言信息:')
+      console.log('  主要语言:', navigator.language)
+      console.log('  所有语言:', navigator.languages)
+      
+      // 调试引荐信息
+      if (document.referrer) {
+        console.log('🔗 引荐网站信息:')
+        console.log('  完整URL:', document.referrer)
+        try {
+          const referrerUrl = new URL(document.referrer)
+          console.log('  域名:', referrerUrl.hostname)
+          console.log('  路径:', referrerUrl.pathname)
+          console.log('  参数:', referrerUrl.search)
+        } catch (e) {
+          console.log('  解析失败:', e)
+        }
+      }
+      
       // 追踪表单提交开始
       trackServiceInterest(data.integrationType, data.sportsInterests.length)
       trackContactPreference(data.contactMethod)
@@ -85,7 +119,10 @@ export default function SimpleContactForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          userSource
+        }),
       })
 
       const result = await response.json()

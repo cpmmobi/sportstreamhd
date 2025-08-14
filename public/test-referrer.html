@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="unsafe-url">
+    <title>引荐测试页面</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+            transition: background 0.2s;
+        }
+        .test-link:hover {
+            background: #0056b3;
+            color: white;
+        }
+        .social { background: #1877f2; }
+        .tech { background: #24292e; }
+        .news { background: #ff6600; }
+        .search { background: #34a853; }
+        
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .debug {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔗 引荐来源测试页面</h1>
+    
+    <div class="note">
+        <strong>📝 测试说明：</strong><br>
+        这个页面运行在您的本地服务器上，可以正确传递referrer信息。<br>
+        当前页面URL: <span id="current-url"></span>
+    </div>
+
+    <div class="debug">
+        <strong>🔍 调试信息：</strong><br>
+        <div id="debug-info">加载中...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>📱 社交媒体引荐测试</h2>
+        <p>模拟从社交媒体平台的访问：</p>
+        <a href="/" class="test-link social" data-referrer="https://www.zhihu.com/question/123456789">
+            从知乎访问 (模拟)
+        </a>
+        <a href="/" class="test-link social" data-referrer="https://weibo.com/timeline">
+            从微博访问 (模拟)
+        </a>
+        <a href="/" class="test-link social" data-referrer="https://www.linkedin.com/feed/">
+            从LinkedIn访问 (模拟)
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>💻 技术社区引荐测试</h2>
+        <p>模拟从技术社区的访问：</p>
+        <a href="/" class="test-link tech" data-referrer="https://github.com/awesome/sports-api">
+            从GitHub访问 (模拟)
+        </a>
+        <a href="/" class="test-link tech" data-referrer="https://stackoverflow.com/questions/sports-api">
+            从Stack Overflow访问 (模拟)
+        </a>
+        <a href="/" class="test-link tech" data-referrer="https://v2ex.com/t/sports-streaming">
+            从V2EX访问 (模拟)
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>🔗 真实引荐测试</h2>
+        <p>使用实际的外部链接（如果允许的话）：</p>
+        <a href="/" class="test-link">直接链接到首页</a>
+        <a href="/contact" class="test-link">直接链接到联系页面</a>
+    </div>
+
+    <div class="note">
+        <strong>⚠️ 重要提示：</strong><br>
+        由于现代浏览器的安全策略，从本地文件(file://)访问网站时referrer可能被阻止。<br>
+        建议使用：<code>http://localhost:3000/test-referrer.html</code> 访问此页面进行测试。
+    </div>
+
+    <script>
+        // 显示当前页面信息
+        document.getElementById('current-url').textContent = window.location.href;
+        
+        // 显示调试信息
+        function updateDebugInfo() {
+            const debugInfo = document.getElementById('debug-info');
+            debugInfo.innerHTML = `
+                <strong>当前页面:</strong> ${window.location.href}<br>
+                <strong>Referrer:</strong> ${document.referrer || '(无)'}<br>
+                <strong>协议:</strong> ${window.location.protocol}<br>
+                <strong>时间:</strong> ${new Date().toLocaleString()}
+            `;
+        }
+        updateDebugInfo();
+
+        // 为模拟链接添加点击处理
+        document.querySelectorAll('a[data-referrer]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetUrl = this.href;
+                const fakeReferrer = this.getAttribute('data-referrer');
+                
+                // 在新窗口中打开，并尝试设置referrer（可能被浏览器阻止）
+                const newWindow = window.open(targetUrl, '_blank');
+                
+                // 显示信息给用户
+                alert(`即将跳转到: ${targetUrl}\n模拟referrer: ${fakeReferrer}\n\n实际的referrer将是当前页面URL: ${window.location.href}`);
+            });
+        });
+
+        // 每秒更新调试信息
+        setInterval(updateDebugInfo, 1000);
+    </script>
+</body>
+</html>

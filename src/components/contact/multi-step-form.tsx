@@ -11,6 +11,7 @@ import { Form, FormField, FormLabel, FormMessage, FormDescription } from '@/comp
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { trackFormSubmit, trackServiceInterest, trackContactPreference } from '@/lib/analytics'
+import { getUserSourceInfo } from '@/lib/user-source-tracker'
 
 // 表单验证Schema
 const formSchema = z.object({
@@ -130,6 +131,15 @@ export default function MultiStepForm() {
     try {
       console.log('提交表单数据:', data)
       
+      // 获取用户来源信息
+      const userSource = getUserSourceInfo()
+      console.log('🔍 多步骤表单用户来源信息:', userSource)
+      
+      // 调试语言信息
+      console.log('🌐 浏览器语言信息:')
+      console.log('  主要语言:', navigator.language)
+      console.log('  所有语言:', navigator.languages)
+      
       // 追踪表单提交开始
       trackServiceInterest(data.integrationType, data.sportsInterests.length)
       
@@ -141,7 +151,8 @@ export default function MultiStepForm() {
         },
         body: JSON.stringify({
           ...data,
-          formType: 'multi_step'  // 标识这是多步骤表单
+          formType: 'multi_step',  // 标识这是多步骤表单
+          userSource
         }),
       })
 

@@ -468,7 +468,7 @@ export function getUserSourceInfo(): UserSourceInfo {
   };
 }
 
-// 格式化用户来源信息为易读文本
+// 格式化用户来源信息为易读文本 - 更新版本
 export function formatUserSourceForDisplay(sourceInfo: UserSourceInfo): string {
   const parts = [];
   

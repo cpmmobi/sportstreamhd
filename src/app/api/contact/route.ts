@@ -43,13 +43,11 @@ interface MultiStepFormData {
 
 type ContactFormData = SimpleContactFormData | MultiStepFormData
 
-// 钉钉机器人配置
-const DINGTALK_ACCESS_TOKEN = process.env.DINGTALK_ACCESS_TOKEN || 'f7cf0fd1267222a98e223611734a46cc9a705ac8ff8eb9773dcf392aa4fdc0e8'
-const DINGTALK_SECRET = process.env.DINGTALK_SECRET || '' // 您需要提供加签密钥
+
 
 // 飞书机器人配置
-const FEISHU_WEBHOOK_URL = process.env.FEISHU_WEBHOOK_URL || 'https://open.larksuite.com/open-apis/bot/v2/hook/3900791f-0dfd-4821-8d5f-58d158487db7'
-const FEISHU_SECRET = process.env.FEISHU_SECRET || '8THJN0RgyJuprBVwkNn1ef'
+const FEISHU_WEBHOOK_URL = process.env.FEISHU_WEBHOOK_URL || ''
+const FEISHU_SECRET = process.env.FEISHU_SECRET || ''
 
 // 获取客户端IP地址
 function getClientIP(request: NextRequest): string {
@@ -284,223 +282,13 @@ function formatUserSourceInfo(userSource: UserSourceInfo, clientIP: string): str
   return parts.join('  \n')
 }
 
-// 生成钉钉机器人签名
-function generateDingTalkSign(timestamp: number, secret: string): string {
-  const stringToSign = `${timestamp}\n${secret}`
-  const hmac = crypto.createHmac('sha256', secret)
-  hmac.update(stringToSign, 'utf8')
-  const sign = encodeURIComponent(hmac.digest('base64'))
-  return sign
-}
 
-// 构建钉钉机器人完整URL
-function buildDingTalkURL(): { url: string; timestamp: number } {
-  const timestamp = Date.now()
-  let url = `https://oapi.dingtalk.com/robot/send?access_token=${DINGTALK_ACCESS_TOKEN}`
-  
-  // 如果配置了加签密钥，则生成签名
-  if (DINGTALK_SECRET) {
-    const sign = generateDingTalkSign(timestamp, DINGTALK_SECRET)
-    url += `&timestamp=${timestamp}&sign=${sign}`
-  }
-  
-  return { url, timestamp }
-}
 
-// 发送消息到钉钉群
-async function sendToDingTalk(formData: ContactFormData, clientIP: string) {
-  // 构建体育项目显示文本
-  const sportsMap: Record<string, string> = {
-    'football': '⚽ 足球',
-    'basketball': '🏀 篮球',
-    'baseball': '⚾ 棒球',
-    'tennis': '🎾 网球',
-    'esports': '🎮 电竞',
-    'pingpong': '🏓 乒乓球',
-    'badminton': '🏸 羽毛球',
-    'volleyball': '🏐 排球',
-    'cricket': '🏏 板球',
-    'snooker': '🎱 斯诺克',
-    'racing': '🏎️ 赛车',
-    'hockey': '🏒 冰球'
-  }
-  
-  const sportsText = formData.sportsInterests
-    .map(sport => sportsMap[sport] || sport)
-    .join(', ')
 
-  // 服务类型映射
-  const serviceTypeMap: Record<string, string> = {
-    'website_app': '🌐 网站/APP接入赛事直播',
-    'obs_streaming': '📺 仅网络主播在OBS直播使用',
-    'both_scenarios': '🔄 以上两种场景都有'
-  }
-  const serviceText = serviceTypeMap[formData.useCase] || formData.useCase
-
-  let message
-  
-  // 检查是否为多步骤表单
-  if ('formType' in formData && formData.formType === 'multi_step') {
-    // 多步骤表单的详细消息格式
-    const viewerRangeMap: Record<string, string> = {
-      '1-1000': '1-1,000人',
-      '1000-10000': '1,000-10,000人', 
-      '10000-100000': '10,000-100,000人',
-      '100000+': '100,000人以上'
-    }
-    
-    const budgetRangeMap: Record<string, string> = {
-      '1000-5000': '$1,000-$5,000/月',
-      '5000-15000': '$5,000-$15,000/月',
-      '15000-50000': '$15,000-$50,000/月',
-      '50000+': '$50,000以上/月'
-    }
-    
-    const cooperationMap: Record<string, string> = {
-      'monthly': '按月订阅',
-      'quarterly': '按季度订阅', 
-      'yearly': '按年订阅',
-      'custom': '定制化合作'
-    }
-
-    message = {
-      msgtype: 'markdown',
-      markdown: {
-        title: '🎯 高价值客户咨询 - SportStreamHD',
-        text: `## 🎯 高价值客户咨询 - SportStreamHD
-
-### 📋 基本信息
-**🏢 公司名称:** ${formData.companyName}  
-**👤 联系人:** ${formData.contactName} (${formData.position})  
-**📧 邮箱地址:** ${formData.email}  
-**📱 联系电话:** ${formData.phone}
-
-### 💼 业务需求
-**⚽ 感兴趣的体育项目:** ${sportsText}  
-**🔧 服务需求:** ${serviceText}  
-**👥 目标用户群体:** ${formData.targetAudience}  
-**👀 并发观看人数:** ${viewerRangeMap[formData.concurrentViewers] || formData.concurrentViewers}  
-${formData.existingProductUrl ? `**🌐 现有产品链接:** ${formData.existingProductUrl}` : ''}
-
-### ⚙️ 技术信息
-**💻 技术栈:** ${formData.techStack}  
-**🔌 需要API接口:** ${formData.needApi ? '✅ 是' : '❌ 否'}  
-**📅 预计上线时间:** ${formData.launchTimeline}  
-${formData.specialRequirements ? `**📝 特殊需求:** ${formData.specialRequirements}` : ''}
-
-### 💰 商务信息
-**💳 预算范围:** ${budgetRangeMap[formData.budgetRange] || formData.budgetRange}  
-**🤝 合作模式:** ${cooperationMap[formData.cooperationModel] || formData.cooperationModel}  
-${formData.otherRequirements ? `**📋 其他需求:** ${formData.otherRequirements}` : ''}
-
-### 📊 用户来源分析
-${formData.userSource ? formatUserSourceInfo(formData.userSource, clientIP) : '📍 **位置:** ' + getLocationFromIP(clientIP)}
-
----
-
-**⏰ 咨询时间:** ${new Date().toLocaleString('zh-CN', { 
-  timeZone: 'Asia/Shanghai',
-  year: 'numeric',
-  month: '2-digit', 
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit'
-})}
-
-> 🚨 **高价值客户！请优先处理，建议在2小时内与客户取得联系！**  
-> 💡 **提醒：详细的需求信息，适合进行深度商务沟通**`
-      }
-    }
-  } else {
-    // 简化表单的消息格式
-    const simpleData = formData as SimpleContactFormData
-    
-    // 判断联系方式类型
-    const isQQ = /^\d+$/.test(simpleData.contactMethod)
-    const isTelegram = simpleData.contactMethod.startsWith('@')
-    let contactIcon = '📱'
-    if (isQQ) contactIcon = '🐧'
-    if (isTelegram) contactIcon = '✈️'
-
-    message = {
-      msgtype: 'markdown',
-      markdown: {
-        title: '🎯 新客户咨询 - SportStreamHD',
-        text: `## 🎯 新客户咨询 - SportStreamHD
-
-**📧 邮箱地址:**  
-${simpleData.email}
-
-**${contactIcon} 联系方式:**  
-${simpleData.contactMethod}
-
-**⚽ 感兴趣的体育项目:**  
-${sportsText}
-
-**🎯 使用场景:**  
-${serviceText}
-
-${simpleData.streamerType ? `**👥 主播规模:**  
-${simpleData.streamerType === 'team' ? '主播团体' : '个体主播'}
-
-` : ''}${simpleData.platformInfo ? `**🌐 平台信息:**  
-${simpleData.platformInfo}
-
-` : ''}**📝 详细需求说明:**  
-${simpleData.requirements || '暂无详细说明'}
-
-### 📊 用户来源分析
-${simpleData.userSource ? formatUserSourceInfo(simpleData.userSource, clientIP) : '📍 **位置:** ' + getLocationFromIP(clientIP)}
-
----
-
-**⏰ 咨询时间:** ${new Date().toLocaleString('zh-CN', { 
-  timeZone: 'Asia/Shanghai',
-  year: 'numeric',
-  month: '2-digit', 
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit'
-})}
-
-> 🚀 **请及时跟进客户需求，建议在4小时内与客户取得联系！**  
-> 💡 **提醒：可直接回复邮箱或通过联系方式快速沟通**`
-      }
-    }
-  }
-
-  try {
-    const { url: webhookUrl, timestamp } = buildDingTalkURL()
-    
-    console.log('🔗 钉钉机器人请求URL:', webhookUrl.replace(/access_token=[^&]*/, 'access_token=***'))
-    
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(message),
-    })
-
-    const result = await response.json()
-    
-    if (result.errcode === 0) {
-      console.log('✅ 钉钉消息发送成功')
-      return { success: true, message: '钉钉通知发送成功' }
-    } else {
-      console.error('❌ 钉钉消息发送失败:', result)
-      return { success: false, error: result.errmsg || '发送失败' }
-    }
-  } catch (error) {
-    console.error('🔥 发送钉钉消息时出错:', error)
-    return { success: false, error: '网络错误' }
-  }
-}
 
 // 生成飞书机器人签名
 function generateFeishuSign(timestamp: number, secret: string): string {
+  // 根据飞书官方文档: 签名字符串为 timestamp + "\n" + secret
   const stringToSign = `${timestamp}\n${secret}`
   const hmac = crypto.createHmac('sha256', secret)
   hmac.update(stringToSign, 'utf8')
@@ -563,135 +351,43 @@ async function sendToFeishu(formData: ContactFormData, clientIP: string) {
       'custom': '定制化合作'
     }
 
+    // 构建紧凑的消息内容，优化排版
+    const messageContent = `🎯 高价值客户咨询 - SportStreamHD
+📋 基本信息
+🏢 公司名称: ${formData.companyName}
+👤 联系人: ${formData.contactName} (${formData.position})
+📧 邮箱地址: ${formData.email}
+📱 联系电话: ${formData.phone}
+💼 业务需求
+⚽ 感兴趣的体育项目: ${sportsText}
+🔧 服务需求: ${serviceText}
+👥 目标用户群体: ${formData.targetAudience}
+👀 并发观看人数: ${viewerRangeMap[formData.concurrentViewers] || formData.concurrentViewers}${formData.existingProductUrl ? `\n🌐 现有产品链接: ${formData.existingProductUrl}` : ''}
+⚙️ 技术信息
+💻 技术栈: ${formData.techStack}
+🔌 需要API接口: ${formData.needApi ? '✅ 是' : '❌ 否'}
+📅 预计上线时间: ${formData.launchTimeline}${formData.specialRequirements ? `\n📝 特殊需求: ${formData.specialRequirements}` : ''}
+💰 商务信息
+💳 预算范围: ${budgetRangeMap[formData.budgetRange] || formData.budgetRange}
+🤝 合作模式: ${cooperationMap[formData.cooperationModel] || formData.cooperationModel}${formData.otherRequirements ? `\n📋 其他需求: ${formData.otherRequirements}` : ''}
+📊 用户来源分析
+${formData.userSource ? formatUserSourceInfo(formData.userSource, clientIP) : '📍 位置: ' + getLocationFromIP(clientIP)}
+⏰ 咨询时间: ${new Date().toLocaleString('zh-CN', { 
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit', 
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })}
+🚨 高价值客户！请优先处理，建议在2小时内与客户取得联系！
+💡 提醒：详细的需求信息，适合进行深度商务沟通`
+
     message = {
-      msg_type: 'post',
+      msg_type: 'text',
       content: {
-        post: {
-          zh_cn: {
-            title: '🎯 高价值客户咨询 - SportStreamHD',
-            content: [
-              [
-                {
-                  tag: 'text',
-                  text: '🎯 高价值客户咨询 - SportStreamHD'
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n📋 基本信息\n🏢 公司名称: '
-                },
-                {
-                  tag: 'text',
-                  text: formData.companyName,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n👤 联系人: '
-                },
-                {
-                  tag: 'text',
-                  text: `${formData.contactName} (${formData.position})`,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n📧 邮箱地址: '
-                },
-                {
-                  tag: 'text',
-                  text: formData.email,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n📱 联系电话: '
-                },
-                {
-                  tag: 'text',
-                  text: formData.phone,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n\n💼 业务需求\n⚽ 感兴趣的体育项目: '
-                },
-                {
-                  tag: 'text',
-                  text: sportsText,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n🔧 服务需求: '
-                },
-                {
-                  tag: 'text',
-                  text: serviceText,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n👥 目标用户群体: '
-                },
-                {
-                  tag: 'text',
-                  text: formData.targetAudience,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n👀 并发观看人数: '
-                },
-                {
-                  tag: 'text',
-                  text: viewerRangeMap[formData.concurrentViewers] || formData.concurrentViewers,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n\n⏰ 咨询时间: '
-                },
-                {
-                  tag: 'text',
-                  text: new Date().toLocaleString('zh-CN', { 
-                    timeZone: 'Asia/Shanghai',
-                    year: 'numeric',
-                    month: '2-digit', 
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                  }),
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n\n🚨 高价值客户！请优先处理，建议在2小时内与客户取得联系！'
-                }
-              ]
-            ]
-          }
-        }
+        text: messageContent
       }
     }
   } else {
@@ -705,107 +401,44 @@ async function sendToFeishu(formData: ContactFormData, clientIP: string) {
     if (isQQ) contactIcon = '🐧'
     if (isTelegram) contactIcon = '✈️'
 
+    // 构建紧凑的消息内容，优化排版
+    const messageContent = `🎯 新客户咨询 - SportStreamHD
+📧 邮箱地址: ${simpleData.email}
+${contactIcon} 联系方式: ${simpleData.contactMethod}
+⚽ 感兴趣的体育项目: ${sportsText}
+🎯 使用场景: ${serviceText}${simpleData.streamerType ? `\n👥 主播规模: ${simpleData.streamerType === 'team' ? '主播团体' : '个体主播'}` : ''}${simpleData.platformInfo ? `\n🌐 平台信息: ${simpleData.platformInfo}` : ''}
+📝 详细需求说明: ${simpleData.requirements || '暂无详细说明'}
+📊 用户来源分析
+${simpleData.userSource ? formatUserSourceInfo(simpleData.userSource, clientIP) : '📍 位置: ' + getLocationFromIP(clientIP)}
+⏰ 咨询时间: ${new Date().toLocaleString('zh-CN', { 
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit', 
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })}
+🚀 请及时跟进客户需求，建议在4小时内与客户取得联系！
+💡 提醒：可直接回复邮箱或通过联系方式快速沟通`
+
     message = {
-      msg_type: 'post',
+      msg_type: 'text',
       content: {
-        post: {
-          zh_cn: {
-            title: '🎯 新客户咨询 - SportStreamHD',
-            content: [
-              [
-                {
-                  tag: 'text',
-                  text: '🎯 新客户咨询 - SportStreamHD'
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n📧 邮箱地址: '
-                },
-                {
-                  tag: 'text',
-                  text: simpleData.email,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: `\n${contactIcon} 联系方式: `
-                },
-                {
-                  tag: 'text',
-                  text: simpleData.contactMethod,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n⚽ 感兴趣的体育项目: '
-                },
-                {
-                  tag: 'text',
-                  text: sportsText,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n🎯 使用场景: '
-                },
-                {
-                  tag: 'text',
-                  text: serviceText,
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n⏰ 咨询时间: '
-                },
-                {
-                  tag: 'text',
-                  text: new Date().toLocaleString('zh-CN', { 
-                    timeZone: 'Asia/Shanghai',
-                    year: 'numeric',
-                    month: '2-digit', 
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                  }),
-                  un_escape: true
-                }
-              ],
-              [
-                {
-                  tag: 'text',
-                  text: '\n\n🚀 请及时跟进客户需求，建议在4小时内与客户取得联系！'
-                }
-              ]
-            ]
-          }
-        }
+        text: messageContent
       }
     }
   }
 
   try {
-    const timestamp = Date.now()
-    const sign = generateFeishuSign(timestamp, FEISHU_SECRET)
-    
     console.log('🔗 飞书机器人请求URL:', FEISHU_WEBHOOK_URL.replace(/hook\/[^?]*/, 'hook/***'))
+    console.log('🔍 飞书机器人无签名验证模式')
     
+    // 直接发送请求，不使用签名验证
     const response = await fetch(FEISHU_WEBHOOK_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-Lark-Signature': sign,
-        'X-Lark-Request-Timestamp': timestamp.toString()
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(message),
     })
@@ -923,29 +556,24 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // 发送到钉钉和飞书
-    const [dingResult, feishuResult] = await Promise.all([
-      sendToDingTalk(formData, clientIP),
-      sendToFeishu(formData, clientIP)
-    ])
+    // 发送到飞书
+    const feishuResult = await sendToFeishu(formData, clientIP)
 
     // 记录推送结果
     console.log('📤 推送结果:', {
-      dingTalk: dingResult.success ? '✅ 成功' : '❌ 失败',
       feishu: feishuResult.success ? '✅ 成功' : '❌ 失败'
     })
 
-    // 只要有一个平台推送成功，就返回成功给用户
-    if (dingResult.success || feishuResult.success) {
+    // 飞书推送成功，返回成功给用户
+    if (feishuResult.success) {
       return NextResponse.json({ 
         success: true, 
         message: '咨询提交成功！我们的专业团队将在4小时内与您联系，为您提供定制化的解决方案和报价。'
       })
     } else {
-      // 即使两个平台都发送失败，也返回成功给用户，避免影响用户体验
+      // 即使飞书发送失败，也返回成功给用户，避免影响用户体验
       // 但在服务端记录错误日志
-      console.error('⚠️ 钉钉和飞书消息发送都失败，但仍返回成功给用户:', {
-        dingTalk: dingResult.error,
+      console.error('⚠️ 飞书消息发送失败，但仍返回成功给用户:', {
         feishu: feishuResult.error
       })
       return NextResponse.json({ 

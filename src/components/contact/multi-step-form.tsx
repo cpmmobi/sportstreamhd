@@ -117,7 +117,7 @@ export default function MultiStepForm() {
       case 2:
         return ['sportsInterests', 'integrationType', 'targetAudience', 'concurrentViewers'] as (keyof FormData)[]
       case 3:
-        return ['techStack', 'launchTimeline'] as (keyof FormData)[]
+        return ['techStack', 'needApi', 'launchTimeline', 'specialRequirements'] as (keyof FormData)[]
       case 4:
         return ['budgetRange', 'cooperationModel'] as (keyof FormData)[]
       default:

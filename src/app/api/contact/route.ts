@@ -7,7 +7,9 @@ interface SimpleContactFormData {
   email: string
   contactMethod: string
   sportsInterests: string[]
-  integrationType: string
+  useCase: string
+  streamerType?: string
+  platformInfo?: string
   requirements?: string
   userSource?: UserSourceInfo  // 添加用户来源信息
 }
@@ -23,7 +25,7 @@ interface MultiStepFormData {
   phone: string
   // 第二步：业务需求
   sportsInterests: string[]
-  integrationType: string
+  useCase: string
   targetAudience: string
   concurrentViewers: string
   existingProductUrl?: string
@@ -325,12 +327,11 @@ async function sendToDingTalk(formData: ContactFormData, clientIP: string) {
 
   // 服务类型映射
   const serviceTypeMap: Record<string, string> = {
-    'rtmp': '🔴 RTMP推流接入',
-    'playback': '📺 直播链接接入',
-    'api': '🔌 API接口集成',
-    'consultation': '💬 先咨询了解'
+    'website_app': '🌐 网站/APP接入赛事直播',
+    'obs_streaming': '📺 仅网络主播在OBS直播使用',
+    'both_scenarios': '🔄 以上两种场景都有'
   }
-  const serviceText = serviceTypeMap[formData.integrationType] || formData.integrationType
+  const serviceText = serviceTypeMap[formData.useCase] || formData.useCase
 
   let message
   
@@ -433,10 +434,16 @@ ${simpleData.contactMethod}
 **⚽ 感兴趣的体育项目:**  
 ${sportsText}
 
-**🔧 服务需求:**  
+**🎯 使用场景:**  
 ${serviceText}
 
-**📝 详细需求说明:**  
+${simpleData.streamerType ? `**👥 主播规模:**  
+${simpleData.streamerType === 'team' ? '主播团体' : '个体主播'}
+
+` : ''}${simpleData.platformInfo ? `**🌐 平台信息:**  
+${simpleData.platformInfo}
+
+` : ''}**📝 详细需求说明:**  
 ${simpleData.requirements || '暂无详细说明'}
 
 ### 📊 用户来源分析
@@ -505,7 +512,7 @@ export async function POST(request: NextRequest) {
       // 验证必填字段
       if (!multiStepData.companyName || !multiStepData.contactName || !multiStepData.position || 
           !multiStepData.email || !multiStepData.phone || !multiStepData.sportsInterests?.length || 
-          !multiStepData.integrationType || !multiStepData.targetAudience || !multiStepData.concurrentViewers ||
+          !multiStepData.useCase || !multiStepData.targetAudience || !multiStepData.concurrentViewers ||
           !multiStepData.techStack || !multiStepData.launchTimeline || !multiStepData.budgetRange || 
           !multiStepData.cooperationModel) {
         return NextResponse.json(
@@ -535,7 +542,7 @@ export async function POST(request: NextRequest) {
         email: multiStepData.email,
         phone: multiStepData.phone,
         sportsCount: multiStepData.sportsInterests.length,
-        serviceType: multiStepData.integrationType,
+        serviceType: multiStepData.useCase,
         budget: multiStepData.budgetRange
       })
     } else {
@@ -543,7 +550,7 @@ export async function POST(request: NextRequest) {
       const simpleData = formData as SimpleContactFormData
       
       // 验证必填字段
-      if (!simpleData.email || !simpleData.contactMethod || !simpleData.sportsInterests?.length || !simpleData.integrationType) {
+      if (!simpleData.email || !simpleData.contactMethod || !simpleData.sportsInterests?.length || !simpleData.useCase) {
         return NextResponse.json(
           { 
             success: false,
@@ -582,7 +589,7 @@ export async function POST(request: NextRequest) {
         email: simpleData.email,
         contactMethod: simpleData.contactMethod,
         sportsCount: simpleData.sportsInterests.length,
-        serviceType: simpleData.integrationType
+        serviceType: simpleData.useCase
       })
     }
 

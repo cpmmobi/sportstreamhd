@@ -28,7 +28,9 @@ const formSchema = z.object({
       message: 'Telegram格式：@username（5-32位字符），QQ格式：5-11位数字'
     }),
   sportsInterests: z.array(z.string()).min(1, '请至少选择一种体育项目'),
-  integrationType: z.string().min(1, '请选择接入方式'),
+  useCase: z.string().min(1, '请选择使用场景'),
+  streamerType: z.string().optional(), // 主播规模
+  platformInfo: z.string().optional(), // 平台信息
   requirements: z.string().optional(),
 })
 
@@ -50,10 +52,14 @@ const sportsOptions = [
 ]
 
 const integrationOptions = [
-  { value: 'rtmp', label: 'RTMP推流接入' },
-  { value: 'playback', label: '直播链接接入' },
-  { value: 'api', label: 'API接口集成' },
-  { value: 'consultation', label: '先咨询了解' },
+  { value: 'website_app', label: '网站/APP接入赛事直播' },
+  { value: 'obs_streaming', label: '仅网络主播在OBS直播使用' },
+  { value: 'both_scenarios', label: '以上两种场景都有' },
+]
+
+const streamerTypeOptions = [
+  { value: 'team', label: '主播团体' },
+  { value: 'individual', label: '个体主播' },
 ]
 
 export default function SimpleContactForm() {
@@ -66,7 +72,9 @@ export default function SimpleContactForm() {
       email: '',
       contactMethod: '',
       sportsInterests: [],
-      integrationType: '',
+      useCase: '',
+      streamerType: '',
+      platformInfo: '',
       requirements: '',
     },
   })
@@ -111,7 +119,7 @@ export default function SimpleContactForm() {
       }
       
       // 追踪表单提交开始
-      trackServiceInterest(data.integrationType, data.sportsInterests.length)
+      trackServiceInterest(data.useCase, data.sportsInterests.length)
       trackContactPreference(data.contactMethod)
       
       const response = await fetch('/api/contact', {
@@ -265,15 +273,15 @@ export default function SimpleContactForm() {
                 )}
               </FormField>
 
-              <FormField>
-                <FormLabel>服务需求 *</FormLabel>
+                            <FormField>
+                <FormLabel>使用场景 *</FormLabel>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                   {integrationOptions.map((option) => (
                     <label
                       key={option.value}
                       className={cn(
                         "flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-colors",
-                        form.watch('integrationType') === option.value
+                        form.watch('useCase') === option.value
                           ? "bg-brand-primary/10 border-brand-primary"
                           : "bg-white border-brand-gray-200 hover:border-brand-gray-300"
                       )}
@@ -281,17 +289,67 @@ export default function SimpleContactForm() {
                       <input
                         type="radio"
                         value={option.value}
-                        {...form.register('integrationType')}
+                        {...form.register('useCase')}
                         className="sr-only"
                       />
                       <span className="text-small font-medium">{option.label}</span>
                     </label>
                   ))}
                 </div>
-                {form.formState.errors.integrationType && (
-                  <FormMessage>{form.formState.errors.integrationType.message}</FormMessage>
+                {form.formState.errors.useCase && (
+                  <FormMessage>{form.formState.errors.useCase.message}</FormMessage>
                 )}
               </FormField>
+
+              {/* 关联问题1：主播规模（仅当选择"仅网络主播在OBS直播使用"时显示） */}
+              {form.watch('useCase') === 'obs_streaming' && (
+                <FormField>
+                  <FormLabel>主播规模 *</FormLabel>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                    {streamerTypeOptions.map((option) => (
+                      <label
+                        key={option.value}
+                        className={cn(
+                          "flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-colors",
+                          form.watch('streamerType') === option.value
+                            ? "bg-brand-primary/10 border-brand-primary"
+                            : "bg-white border-brand-gray-200 hover:border-brand-gray-300"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          value={option.value}
+                          {...form.register('streamerType')}
+                          className="sr-only"
+                        />
+                        <span className="text-small font-medium">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {/* 个体主播提示 */}
+                  {form.watch('streamerType') === 'individual' && (
+                    <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-small">
+                        温馨提示：当前直播源方案主要服务于团队及企业客户，个人用户使用成本可能略高。
+                      </p>
+                    </div>
+                  )}
+                </FormField>
+              )}
+
+
+
+              {/* 关联问题2：平台信息（当选择"网站/APP接入赛事直播"或"以上两种场景都有"时显示） */}
+              {(form.watch('useCase') === 'website_app' || form.watch('useCase') === 'both_scenarios') && (
+                <FormField>
+                  <FormLabel>网站/APP或平台信息（可选）</FormLabel>
+                  <Input
+                    {...form.register('platformInfo')}
+                    placeholder="为了便于后续沟通，请输入您的平台名称"
+                    className="mt-2"
+                  />
+                </FormField>
+              )}
 
               <FormField>
                 <FormLabel htmlFor="requirements">详细需求说明（可选）</FormLabel>

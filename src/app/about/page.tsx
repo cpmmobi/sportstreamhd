@@ -91,11 +91,11 @@ export default function AboutPage() {
             <Card className="text-center group hover:shadow-card-hover transition-all duration-300">
               <CardContent className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-200">
-                  球
+                  OF
                 </div>
-                <h3 className="text-h4 font-semibold text-brand-gray-800 mb-3">球探网</h3>
+                <h3 className="text-h4 font-semibold text-brand-gray-800 mb-3">Onefootball</h3>
                 <p className="text-body text-brand-gray-400 mb-4">
-                  体育数据服务领域的领导者，专注于为体育行业提供全面的数据解决方案
+                  全球领先的足球数字平台，为球迷提供实时比分、新闻和深度数据分析
                 </p>
                 <div className="text-small text-brand-primary">数据技术 • 产品设计</div>
               </CardContent>
@@ -104,9 +104,9 @@ export default function AboutPage() {
             <Card className="text-center group hover:shadow-card-hover transition-all duration-300">
               <CardContent className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-200">
-                  懂
+                  直
                 </div>
-                <h3 className="text-h4 font-semibold text-brand-gray-800 mb-3">懂球帝</h3>
+                <h3 className="text-h4 font-semibold text-brand-gray-800 mb-3">直播吧</h3>
                 <p className="text-body text-brand-gray-400 mb-4">
                   中国最大的足球社区平台，拥有千万级用户，深耕体育内容和社区运营
                 </p>

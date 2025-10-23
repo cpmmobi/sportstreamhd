@@ -195,14 +195,14 @@ export default function ServicesPage() {
         <div className="container-custom">
           <div className="text-center mb-16">
             <h2 className="text-responsive-h3 font-bold text-brand-gray-800 mb-4">
-              两种技术服务形式
+              三种技术服务形式
             </h2>
             <p className="text-body text-brand-gray-400 max-w-2xl mx-auto">
-              灵活的接入方式，满足不同客户的技术需求和业务场景。两种服务都提供API接口查询比赛与视频流的对应关系
+              提供RTMP推流、直播链接和直播源群组机器人三种技术服务，满足不同场景的集成需求
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* RTMP推流服务 */}
             <Card className="group hover:shadow-card-hover transition-all duration-300 hover:scale-105">
               <CardHeader className="text-center">
@@ -307,6 +307,61 @@ export default function ServicesPage() {
                     <li>• DASH - 自适应码率</li>
                     <li>• RTMP - 传统播放器</li>
                     <li>• WebRTC - 超低延迟</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 直播源群组机器人服务 */}
+            <Card className="group hover:shadow-card-hover transition-all duration-300 hover:scale-105">
+              <CardHeader className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+                  <Database className="h-10 w-10 text-white" />
+                </div>
+                <CardTitle className="text-h3">直播源群组机器人</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <p className="text-body text-brand-gray-400 text-center">
+                  24h自助查询卫星直播源，OBS打开即播。简单数字回复即可获取高质量直播源地址
+                </p>
+                
+                <div className="bg-brand-gray-800 rounded-lg p-4 font-mono text-small">
+                  <div className="text-brand-light">回复: 666</div>
+                  <div className="text-brand-accent">→ 查询比赛列表</div>
+                  <div className="text-brand-gray-400 mt-2">← 获取比赛信息</div>
+                  <div className="text-green-400 mt-3">回复: 比赛序号</div>
+                  <div className="text-brand-gray-400 mt-1">→ 查询卫星源地址</div>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-brand-gray-800">适用场景：</h4>
+                  <ul className="space-y-2 text-small text-brand-gray-400">
+                    <li className="flex items-start space-x-2">
+                      <CheckCircle className="h-4 w-4 text-brand-success mt-0.5" />
+                      <span>个人直播需求</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <CheckCircle className="h-4 w-4 text-brand-success mt-0.5" />
+                      <span>OBS推流</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <CheckCircle className="h-4 w-4 text-brand-success mt-0.5" />
+                      <span>自助查询服务</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <CheckCircle className="h-4 w-4 text-brand-success mt-0.5" />
+                      <span>24小时可用</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-brand-gray-800">服务特点：</h4>
+                  <ul className="space-y-1 text-small text-brand-gray-400">
+                    <li>• 卫星直播源 - 高质量信号</li>
+                    <li>• 即时响应 - 秒级查询</li>
+                    <li>• 简单操作 - 数字回复</li>
+                    <li>• 全天候 - 24小时服务</li>
                   </ul>
                 </div>
               </CardContent>

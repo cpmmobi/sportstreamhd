@@ -326,11 +326,11 @@ export default function SimpleContactForm() {
                       </label>
                     ))}
                   </div>
-                  {/* 个体主播提示 */}
-                  {form.watch('streamerType') === 'individual' && (
+                  {/* 主播提示 */}
+                  {(form.watch('streamerType') === 'individual' || form.watch('streamerType') === 'team') && (
                     <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-red-600 text-small">
-                        温馨提示：当前直播源方案主要服务于团队及企业客户，个人用户使用成本可能略高。
+                        温馨提示：专为主播群体设计的Telegram群组机器人，24h为您提供超清卫星源
                       </p>
                     </div>
                   )}

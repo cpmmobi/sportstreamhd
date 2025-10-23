@@ -63,14 +63,14 @@ export default function SportsSection() {
         <div className="mt-20">
           <div className="text-center mb-12">
             <h3 className="text-responsive-h3 font-bold text-brand-gray-800 mb-4">
-              两种技术服务形式
+              三种技术服务形式
             </h3>
             <p className="text-body text-brand-gray-400">
-              灵活的接入方式，满足不同客户的技术需求。两种服务都提供API接口查询比赛与视频流的对应关系
+              灵活的接入方式，满足不同客户的技术需求。提供RTMP推流、直播链接和直播源群组机器人三种服务
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <Card className="text-center group hover:border-brand-primary/20 transition-all duration-300">
               <CardContent className="p-8">
                 <div className="w-16 h-16 bg-gradient-to-br from-brand-primary to-brand-light rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-200">
@@ -111,6 +111,28 @@ export default function SportsSection() {
                   <div className="text-brand-gray-400 mt-1">live/12345.m3u8</div>
                   <div className="text-brand-primary mt-2">GET /api/matches</div>
                   <div className="text-brand-gray-400 mt-1">→ 查询比赛和直播链接对应</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center group hover:border-brand-primary/20 transition-all duration-300">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-200">
+                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                  </svg>
+                </div>
+                <h4 className="text-h4 font-semibold text-brand-gray-800 mb-4">
+                  直播源群组机器人
+                </h4>
+                <p className="text-body text-brand-gray-400 mb-6">
+                  24h自助查询卫星直播源，OBS打开即播。简单数字回复即可获取高质量直播源地址
+                </p>
+                <div className="bg-brand-gray-50 rounded-lg p-4 font-mono text-small text-left">
+                  <div className="text-brand-primary">回复: 666</div>
+                  <div className="text-brand-gray-400 mt-1">→ 查询比赛列表</div>
+                  <div className="text-brand-primary mt-2">回复: 比赛序号</div>
+                  <div className="text-brand-gray-400 mt-1">→ 查询卫星源地址</div>
                 </div>
               </CardContent>
             </Card>

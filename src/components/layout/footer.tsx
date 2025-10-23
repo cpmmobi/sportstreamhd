@@ -122,8 +122,8 @@ export default function Footer() {
 
           {/* Technical Services */}
           <div className="mt-8 pt-8 border-t border-white/20">
-            <h3 className="text-h4 font-semibold mb-4">技术服务形式</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <h3 className="text-h4 font-semibold mb-4">三种技术服务形式</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white/10 rounded-lg p-4">
                 <h4 className="font-semibold mb-2">RTMP推流服务</h4>
                 <p className="text-white/80 text-small">客户提供推流域名，我们推送直播流，并提供API查询比赛对应关系</p>
@@ -132,7 +132,22 @@ export default function Footer() {
                 <h4 className="font-semibold mb-2">直播链接服务</h4>
                 <p className="text-white/80 text-small">提供可直接播放的直播链接，并提供API查询比赛对应关系</p>
               </div>
-
+              <div className="bg-white/10 rounded-lg p-4">
+                <h4 className="font-semibold mb-2">直播源群组机器人</h4>
+                <p className="text-white/80 text-small mb-3">24h自助查询卫星直播源，OBS打开即播</p>
+                <div className="space-y-2">
+                  <div className="text-white/90 text-small">
+                    <span className="font-medium">回复: 666</span>
+                    <br />
+                    <span className="text-white/70">查询比赛列表</span>
+                  </div>
+                  <div className="text-white/90 text-small">
+                    <span className="font-medium">回复: 比赛序号</span>
+                    <br />
+                    <span className="text-white/70">查询卫星源地址</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

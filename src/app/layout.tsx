@@ -97,6 +97,34 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Bing UET (Universal Event Tracking) */}
+        <Script
+          id="bing-uet"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w, d, t, u, o) {
+                w[u] = w[u] || [];
+                o.ts = (new Date).getTime();
+                var n = d.createElement(t);
+                n.src = "https://bat.bing.net/bat.js?ti=" + o.ti + ("uetq" != u ? "&q=" + u : "");
+                n.async = 1;
+                n.onload = n.onreadystatechange = function() {
+                  var s = this.readyState;
+                  s && "loaded" !== s && "complete" !== s || (o.q = w[u], w[u] = new UET(o), w[u].push("pageLoad"), n.onload = n.onreadystatechange = null)
+                };
+                var i = d.getElementsByTagName(t)[0];
+                i.parentNode.insertBefore(n, i);
+              })(window, document, "script", "uetq", {ti: "343246417", enableAutoSpaTracking: true});
+              
+              window.uetq = window.uetq || [];
+              window.uetq.push('consent', 'default', {'ad_storage': 'denied'});
+              
+              // 当用户同意后可执行以下代码:
+              // window.uetq.push('consent', 'update', {'ad_storage': 'granted'});
+            `,
+          }}
+        />
       </head>
       <body className={cn(
         "min-h-screen bg-background font-sans antialiased",
